@@ -65,17 +65,11 @@ export class RequestMiddleware implements NestMiddleware {
             },
         } as PropertyDescriptor);
 
-        req.skip = req.query.skip;
+        req.skip = isNaN(req.query.skip) ? 0 : parseInt(req.query.skip);
 
-        req.limit = req.query.limit;
+        req.limit = isNaN(req.query.limit) ?  50 : parseInt(req.query.limit);
 
         if (req.token) {
-          /*  const decoded = JwtHandler.decode(req.token);
-
-            if (!decoded.error) {
-                req.identity = decoded.result.payload;
-            }*/
-
             RequestMiddleware.SetIdentity(req.token, req);
         }
 
