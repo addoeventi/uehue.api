@@ -37,7 +37,7 @@ export class AuthProvider {
             message: 'NOT_AUTHENTICATED',
         };
         if (identity) {
-            const res = await this.userModel.findOne({guid: identity.guid}, { password: 0 });
+            const res: any = await this.userModel.findOne({guid: identity.guid}, { password: 0 });
 
             if (!res) {
                 throw(baseError);
@@ -53,21 +53,26 @@ export class AuthProvider {
 
     signin(user: DocumentUser) {
         return new Observable( subscriber => {
-            if (this.getByEmail(user.email)) {
-                subscriber.error({
-                    error: 'USER_ALREADY_EXISTS',
-                    message: 'USER_ALREADY_EXISTS',
-                });
-            } else {
-                user.guid = newGuid();
-                user.password = md5(md5(user.password + '@_@' + user.password));
-                this.userModel.create(user, {}, {}).then(result => {
-                    subscriber.next({
-                        user: result,
-                        token: JwtHandler.encode(result),
+            let email = this.getByEmail(user.email).then(res => {
+                if (res) {
+                    subscriber.error({
+                        error: 'USER_ALREADY_EXISTS',
+                        message: 'USER_ALREADY_EXISTS',
                     });
-                });
-            }
+                } else {
+                    user.guid = newGuid();
+                    user.password = md5(md5(user.password + '@_@' + user.password));
+                    this.userModel.create(user, {}, {}).then(result => {
+                        subscriber.next({
+                            user: result,
+                            token: JwtHandler.encode(result),
+                        });
+                    });
+                }
+            }).catch(err => {
+                subscriber.error(err);
+            })
+            
         });
 
     }
