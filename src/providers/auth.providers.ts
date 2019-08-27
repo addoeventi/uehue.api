@@ -53,7 +53,7 @@ export class AuthProvider {
 
     signin(user: DocumentUser) {
         return new Observable( subscriber => {
-            let email = this.getByEmail(user.email).then(res => {
+            this.getByEmail(user.email).then(res => {
                 if (res) {
                     subscriber.error({
                         error: 'USER_ALREADY_EXISTS',
