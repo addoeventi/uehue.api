@@ -1,9 +1,9 @@
-import {Inject, Injectable} from '@nestjs/common';
-import {Model} from 'mongoose';
-import {DocumentProject} from '../database/models';
-import {newGuid} from 'ts-guid';
-import {ExtRequest} from '../../extended/types.extended';
-import {DBModel} from '../environment/db';
+import { Inject, Injectable } from '@nestjs/common';
+import { Model } from 'mongoose';
+import { DocumentProject } from '../database/models';
+import { newGuid } from 'ts-guid';
+import { ExtRequest } from '../../extended/types.extended';
+import { DBModel } from '../environment/db';
 const fs = require('fs');
 const path = require('path');
 
@@ -29,7 +29,7 @@ export class ProjectsProvider {
             {
                 $unwind: '$admin',
             },
-            { $match: {guid}},
+            { $match: { guid } },
         ];
 
         aggregate = req.create(req, aggregate);
@@ -43,11 +43,11 @@ export class ProjectsProvider {
 
         let aggregate: any[] = [
             {
-            $lookup: {
-                from: 'users',
-                localField: 'admin.guid',
-                foreignField: 'guid',
-                as: 'admin',
+                $lookup: {
+                    from: 'users',
+                    localField: 'admin.guid',
+                    foreignField: 'guid',
+                    as: 'admin',
                 },
             },
             {
@@ -56,7 +56,7 @@ export class ProjectsProvider {
         ];
 
         req.fields = req.fields || {
-            'admin.projects' : 0,
+            'admin.projects': 0,
         };
 
         req.fields['admin.projects'] = 0;
@@ -70,14 +70,14 @@ export class ProjectsProvider {
         const fs = require('fs');
         const path = require('path');
 
-        if (fs.existsSync(path.resolve(__dirname , 'uploads')) === false) {
-            fs.mkdirSync(path.resolve(__dirname , 'uploads'));
+        if (fs.existsSync(path.resolve(__dirname, 'uploads')) === false) {
+            fs.mkdirSync(path.resolve(__dirname, 'uploads'));
         }
 
         const errors = [];
 
         files.forEach((file) => {
-            const filePath = path.resolve(__dirname , 'uploads', newGuid() + '.' + file.originalname.split('.').pop());
+            const filePath = path.resolve(__dirname, 'uploads', newGuid() + '.' + file.originalname.split('.').pop());
 
             try {
                 fs.writeFileSync(filePath, file);
@@ -86,7 +86,7 @@ export class ProjectsProvider {
                     name: file.originalname,
                 } as any);
             } catch (err) {
-                errors.push({err, file: file.originalname});
+                errors.push({ err, file: file.originalname });
             }
         });
         return errors;
@@ -103,38 +103,49 @@ export class ProjectsProvider {
 
         return new Promise((resolve, reject) => {
             this.project.create(body).then(item => {
-                resolve({item, errors});
-            }).catch( err => {
+                resolve({ item, errors });
+            }).catch(err => {
                 reject(err);
             });
         });
     }
 
-    async update( files, body, identity) {
-        body.admin = identity;
-        body.files = body.files || [];
+    update(files, body, identity) {
+        return new Promise((resolve, reject) => {
+            body.admin = identity;
+            body.files = body.files || [];
 
-        body.guid = body.guid || newGuid();
+            body.guid = body.guid || newGuid();
 
-        const oldFiles = body.oldFiles || '[]';
+            const oldFiles = body.oldFiles || '[]';
 
-        body.files = JSON.parse(oldFiles);
+            body.files = JSON.parse(oldFiles);
 
-        const errors = this.saveFiles(files, body);
+            const errors = this.saveFiles(files, body);
 
-        const ob: DocumentProject = await this.project.findOne({guid: body.guid});
+            this.project.findOne({ guid: body.guid }).then(project => {
+                const ob: DocumentProject = project;
 
-        ob.name = body.name;
-        ob.description = body.description;
-        ob.files = body.files;
+                ob.name = body.name;
+                ob.description = body.description;
+                ob.status = body.status;
+                ob.files = body.files;
 
-        ob.save();
+                ob.save().then(res => {
+                    resolve(errors);
+                }).catch(err => {
+                    reject(err)
+                });
+            })
+        })
 
-        return errors;
+
+
+
     }
 
     delete(guid, req: ExtRequest) {
-        return this.project.findOneAndUpdate({guid}, {
+        return this.project.findOneAndUpdate({ guid }, {
             $set: {
                 deletedBy: req.identity,
                 deletedDate: new Date(),
@@ -143,7 +154,8 @@ export class ProjectsProvider {
         });
     }
 
-    sendFile(filePath){
-        return path.resolve(__dirname , 'uploads', filePath);
+    sendFile(filePath) {
+        return path.resolve(__dirname, 'uploads', filePath);
     }
+
 }
