@@ -6,7 +6,7 @@ const md5 = require('md5');
 import {JwtHandler} from './jwt.handler';
 import {MSG} from '../../../uehue.models/messages';
 import {Observable} from 'rxjs';
-import {User} from '../../../uehue.models';
+import {Role, User} from '../../../uehue.models';
 import {DBModel} from '../environment/db';
 
 @Injectable()
@@ -61,18 +61,25 @@ export class AuthProvider {
                     });
                 } else {
                     user.guid = newGuid();
+                    user.roles = [ Role.defaultRole() ];
                     user.password = md5(md5(user.password + '@_@' + user.password));
                     this.userModel.create(user, {}, {}).then(result => {
                         subscriber.next({
                             user: result,
                             token: JwtHandler.encode(result),
                         });
+                    }).catch(err => {
+                        debugger;
+
+                        subscriber.error(err);
                     });
                 }
             }).catch(err => {
+                debugger;
+
                 subscriber.error(err);
-            })
-            
+            });
+
         });
 
     }
