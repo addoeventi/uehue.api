@@ -10,6 +10,7 @@ export interface ExtRequest extends Request {
     limit;
     filters;
     fields;
+    orderBy;
     requestInfo: { skip?, limit?, filters?, fields?, identity?: User, token?: string};
 
     create<T>(req: ExtRequest, aggregate: T[]): T[];

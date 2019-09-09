@@ -8,7 +8,7 @@ import {
     UseInterceptors,
     Req,
     Get,
-    Query, Put, Delete, Res,
+    Query, Put, Delete, Res, Param,
 } from '@nestjs/common';
 import {DocumentProject} from '../../database/models';
 import { FilesInterceptor } from '@nestjs/platform-express';
@@ -28,7 +28,7 @@ export class ProjectsController {
     @UseInterceptors(FilesInterceptor('files[]'))
     post(@UploadedFiles() files, @Body() body: DocumentProject, @Req() req: ExtRequest, @Res() res: Response) {
         this.projectsProvider.post(files, body, req.identity).then(result => {
-            return result;
+            res.status(200).send(result)
         }).catch(err => {
             res.status(400).send(err);
         });
@@ -39,8 +39,8 @@ export class ProjectsController {
         return this.projectsProvider.get(req);
     }
 
-    @Get('getById')
-    getById(@Query('guid') guid, @Req() req: ExtRequest) {
+    @Get(':guid')
+    getById(@Param('guid') guid, @Req() req: ExtRequest) {
         return this.projectsProvider.getById(guid, req);
     }
 

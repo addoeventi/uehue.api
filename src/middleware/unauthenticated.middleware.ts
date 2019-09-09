@@ -23,7 +23,7 @@ export class UnauthenticatedMiddleware implements NestMiddleware {
         } else {
 
             if (req.token) {
-                req.identity = decoded.result.payload;
+                (<any>req).identity = decoded.result.payload;
             }
             next();
         }
