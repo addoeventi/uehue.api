@@ -9,13 +9,17 @@ import {APP_GUARD} from '@nestjs/core';
 import {AuthGuard} from './guards/auth.guard';
 import {UnauthenticatedMiddleware} from './middleware/unauthenticated.middleware';
 import {AuthController} from './user/auth/auth.controller';
-import {ProjectsController} from "./projects/projects/projects.controller";
+import {ProjectsController} from './projects/projects/projects.controller';
+import { RolesController } from './controllers/roles/roles.controller';
+import { RolesProvider } from './providers/roles.provider';
+import { StaffsController } from './controllers/staffs/staffs.controller';
 
 @Module({
   imports: [UserModule, DatabaseModule, ProjectsModule],
-  controllers: [AppController],
+  controllers: [AppController, RolesController, StaffsController],
   providers: [
       AppService,
+      RolesProvider,
       /*{
             provide: APP_GUARD,
             useClass: AuthGuard,
@@ -34,7 +38,7 @@ export class AppModule implements NestModule {
                   path: 'projects/file',
                   method: RequestMethod.ALL,
               })
-          .forRoutes(ProjectsController)
+          .forRoutes(ProjectsController);
 
       consumer
         .apply(UnauthenticatedMiddleware)

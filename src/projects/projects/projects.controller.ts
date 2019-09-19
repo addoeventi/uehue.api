@@ -8,7 +8,7 @@ import {
     UseInterceptors,
     Req,
     Get,
-    Query, Put, Delete, Res,
+    Query, Put, Delete, Res, Param,
 } from '@nestjs/common';
 import {DocumentProject} from '../../database/models';
 import { FilesInterceptor } from '@nestjs/platform-express';
@@ -39,8 +39,13 @@ export class ProjectsController {
         return this.projectsProvider.get(req);
     }
 
-    @Get('getById')
-    getById(@Query('guid') guid, @Req() req: ExtRequest) {
+    @Get('reviews/:guid')
+    reviews(@Param('guid') guid, @Req() req: ExtRequest) {
+        return this.projectsProvider.getById(guid, req);
+    }
+
+    @Get('/:guid')
+    getById(@Param('guid') guid, @Req() req: ExtRequest) {
         return this.projectsProvider.getById(guid, req);
     }
 
@@ -49,8 +54,13 @@ export class ProjectsController {
     put(@UploadedFiles() files, @Body() body: DocumentProject, @Req() req: ExtRequest) {
         return this.projectsProvider.update(files, body, req.identity);
     }
+    
+    @Put(':guid/review/:review_id')
+    update(@Param('guid') guid, @Param('review_id') reviewId, @Body() body) {
+        return this.projectsProvider.review(guid, reviewId, body);
+    }
 
-    @Delete()
+    @Delete('/:guid')
     delete(@Query('guid') guid, @Req() req) {
         return this.projectsProvider.delete(guid, req);
     }

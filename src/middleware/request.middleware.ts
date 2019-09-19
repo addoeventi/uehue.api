@@ -13,7 +13,7 @@ export class RequestMiddleware implements NestMiddleware {
         const decoded = JwtHandler.decode(token);
 
         if (!decoded.error) {
-            req.identity = decoded.result.payload;
+            req.identity = decoded.result.payload as any;
         }
     }
 

@@ -22,6 +22,7 @@ export const UserSchema = new Schema({
     surname: String,
     roles: [{ type: RoleSchema, default : [ Role.defaultRole() ]}],
     projects: [{ type: ProjectSchema, default : []}],
+    enabled: { type: Boolean}
 });
 
 export const UserModel: Model<Document, {}> =  model(DBCollections.USER, UserSchema);

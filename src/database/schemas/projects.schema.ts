@@ -7,7 +7,7 @@ export const ProjectSchema = new mongoose.Schema({
     guid: { type: String, required: true},
     name: { type: String, required: true},
     date: { type: Date, required: true, default: new Date()},
-    categories: [{ default: []}],
+    categories: [{type: String}],
     admin: {},
     restrictedRole: {},
     description: String,
@@ -16,6 +16,7 @@ export const ProjectSchema = new mongoose.Schema({
     steps: [{ type: Object, default: []}],
     deletedDate: Date,
     deletedBy: {},
+    professionstReview: { type: Array, default: []}
 });
 
 export const ProjectModel: Model<Document, {}> =  model(DBCollections.PROJECT, ProjectSchema);
