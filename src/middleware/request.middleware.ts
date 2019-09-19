@@ -13,7 +13,7 @@ export class RequestMiddleware implements NestMiddleware {
         const decoded = JwtHandler.decode(token);
 
         if (!decoded.error) {
-            req.identity = decoded.result.payload as any;
+            (<any>req).identity = decoded.result.payload;
         }
     }
 
@@ -33,11 +33,11 @@ export class RequestMiddleware implements NestMiddleware {
         try {
             let result = JSON.parse(req.query.filters);
             if (Object.keys(result).length == 0) {
-                result = null;
+                result = {};
             }
             req.filters = result;
         } catch (e) {
-            req.filters = null;
+            req.filters = {};
         }
 
         Object.defineProperty(req, 'create' , {

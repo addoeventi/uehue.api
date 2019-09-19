@@ -28,7 +28,7 @@ export class ProjectsController {
     @UseInterceptors(FilesInterceptor('files[]'))
     post(@UploadedFiles() files, @Body() body: DocumentProject, @Req() req: ExtRequest, @Res() res: Response) {
         this.projectsProvider.post(files, body, req.identity).then(result => {
-            return result;
+            res.status(200).send(result)
         }).catch(err => {
             res.status(400).send(err);
         });

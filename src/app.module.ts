@@ -1,8 +1,8 @@
-import {MiddlewareConsumer, Module, NestModule, RequestMethod} from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
-import {DatabaseModule} from './database/db.provider';
+import { DatabaseModule } from './database/db.provider';
 import { ProjectsModule } from './projects/projects.module';
 import {RequestMiddleware} from './middleware/request.middleware';
 import {APP_GUARD} from '@nestjs/core';
@@ -40,17 +40,17 @@ export class AppModule implements NestModule {
               })
           .forRoutes(ProjectsController);
 
-      consumer
-        .apply(UnauthenticatedMiddleware)
-        .exclude(
-            {
-              path: 'auth/login',
-              method: RequestMethod.ALL,
-            },
-            {
-              path: 'auth/signin',
-              method: RequestMethod.ALL,
-            },
-        ).forRoutes(AuthController);
+    consumer
+      .apply(UnauthenticatedMiddleware)
+      .exclude(
+        {
+          path: 'auth/login',
+          method: RequestMethod.ALL,
+        },
+        {
+          path: 'auth/signin',
+          method: RequestMethod.ALL,
+        },
+      ).forRoutes(AuthController);
   }
 }
