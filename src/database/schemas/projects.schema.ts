@@ -26,7 +26,8 @@ export const ProjectSchema = new mongoose.Schema({
     steps: [{ type: Object, default: []}],
     deletedDate: { type: Date },
     deletedBy: {},
-    professionstReview: { type: Array, default: []}
+    professionstReview: { type: Array, default: []},
+    team: {}
 });
 
 export const ProjectModel: Model<Document, {}> =  model(DBCollections.PROJECT, ProjectSchema);

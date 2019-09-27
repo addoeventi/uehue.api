@@ -41,7 +41,7 @@ export class ProjectsProvider {
         });
     }
 
-    async getReview(req: ExtRequest){
+    async getReview(req: ExtRequest) {
         const me = await this.auth.me(req.identity);
 
         let aggregate: any[] = [
@@ -121,7 +121,7 @@ export class ProjectsProvider {
             }
         );
 
-        if(filters){
+        if (filters) {
             aggregate.push(...filters)
         }
 
@@ -148,13 +148,24 @@ export class ProjectsProvider {
             const filePath = path.resolve(__dirname, 'uploads', newGuid() + '.' + file.originalname.split('.').pop());
 
             try {
-                fs.writeFileSync(filePath, file);
+                fs.writeFileSync(filePath, file.buffer);
                 body.files.push({
                     path: filePath,
                     name: file.originalname,
                 } as any);
             } catch (err) {
                 errors.push({ err, file: file.originalname });
+            }
+        });
+        body.team.forEach(member => {
+            if (member.cv.data) {
+                const filePath = path.resolve(__dirname, 'uploads', newGuid() + '.' + member.cv.name.split('.').pop());
+                const buffer = Buffer.from(member.cv.data, 'base64');
+
+                member.cv.data = null;
+                member.cv.path = filePath;
+
+                fs.writeFileSync(filePath, buffer);
             }
         });
         return errors;
@@ -224,10 +235,9 @@ export class ProjectsProvider {
             this.project.findOne({ guid: body.guid }).then(project => {
                 const ob: DocumentProject = project;
 
-                ob.name = body.name;
-                ob.description = body.description;
-                ob.status = body.status;
-                ob.files = body.files;
+                for (const key in body) {
+                    ob[key] = body[key];
+                }
 
                 ob.save().then(res => {
                     resolve(errors);
