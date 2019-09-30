@@ -53,7 +53,7 @@ export class AppModule implements NestModule {
           method: RequestMethod.ALL,
         },
         {
-          path: 'auth/login',
+          path: 'auth/signin',
           method: RequestMethod.ALL,
         },
         {
