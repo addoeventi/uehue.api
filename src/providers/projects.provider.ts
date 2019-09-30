@@ -233,6 +233,7 @@ export class ProjectsProvider {
     }
 
     setStatus(guid, status) {
+        //
         return this.project.findOneAndUpdate({ guid }, { $set: { status } });
     }
 
