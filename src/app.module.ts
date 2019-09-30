@@ -41,6 +41,14 @@ export class AppModule implements NestModule {
           method: RequestMethod.ALL,
         }, 
         {
+          path: 'projects',
+          method: RequestMethod.GET
+        },
+        {
+          path: 'projects/:guid',
+          method: RequestMethod.GET
+        },
+        {
           path: 'auth/login',
           method: RequestMethod.ALL,
         },

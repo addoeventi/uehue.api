@@ -91,20 +91,33 @@ export class ProjectsProvider {
 
     async get(req: ExtRequest, filters?: any[]) {
 
-        const me = await this.auth.me(req.identity);
-
         let aggregate: any[] = [
 
         ];
 
         aggregate = req.create(req, aggregate);
 
-        const isAdmin = me.user.roles.find(f => f.name === 'ADMIN') != null;
-        const isProf = me.user.roles.find(f => f.name === 'PROFESSIONIST') != null;
-        const $match = aggregate.find(f => Object.keys(f)[0] === '$match').$match;
-        if ($match && !isAdmin) {
-            if (!(isProf && $match.status === 'DECLINED')) {
-                $match['admin.guid'] = me.user.guid;
+        if (req.identity != null) {
+            const me = await this.auth.me(req.identity);
+
+            const isAdmin = me.user.roles.find(f => f.name === 'ADMIN') != null;
+            const isProf = me.user.roles.find(f => f.name === 'PROFESSIONIST') != null;
+            const $match = aggregate.find(f => Object.keys(f)[0] === '$match').$match;
+            if ($match && !isAdmin) {
+                if (!(isProf && $match.status === 'DECLINED')) {
+                    $match['admin.guid'] = me.user.guid;
+                }
+            }
+        }
+        else{
+            req.fields = {
+                guid: 1,
+                name: 1,
+                short_description : 1,
+                budget: 1,
+                categories: 1,
+                cover: 1,
+                status: 1
             }
         }
 
@@ -196,24 +209,24 @@ export class ProjectsProvider {
                 "guid": projectId,
                 "professionstReview.guid": review
             }, {
-                $set: {
-                    "professionstReview.$.guid": body.guid,
-                    "professionstReview.$.analisys": body.analisys,
-                    "professionstReview.$.budget": body.budget,
-                    "professionstReview.$.effort": body.effort,
-                    "professionstReview.$.note": body.note
-                }
-            })
+                    $set: {
+                        "professionstReview.$.guid": body.guid,
+                        "professionstReview.$.analisys": body.analisys,
+                        "professionstReview.$.budget": body.budget,
+                        "professionstReview.$.effort": body.effort,
+                        "professionstReview.$.note": body.note
+                    }
+                })
         }
         else {
             body.guid = newGuid();
             return this.project.findOneAndUpdate({
                 "guid": projectId
             }, {
-                $push: {
-                    professionstReview: body
-                }
-            })
+                    $push: {
+                        professionstReview: body
+                    }
+                })
         }
 
 
