@@ -13,4 +13,8 @@ export class UsersProvider {
     get(req: ExtRequest) {
         return this.userModel.find(req.filters, req.fields).skip(req.skip).limit(req.limit);
     }
+
+    update(fields, guid){
+        return this.userModel.findOneAndUpdate({guid}, { $set: fields}, {new: true});
+    }
 }

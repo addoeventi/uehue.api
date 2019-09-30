@@ -6,30 +6,22 @@ import { DatabaseModule } from './database/db.provider';
 import { ProjectsModule } from './projects/projects.module';
 import { RequestMiddleware } from './middleware/request.middleware';
 import { APP_GUARD } from '@nestjs/core';
-import { AuthGuard } from './guards/auth.guard';
 import { UnauthenticatedMiddleware } from './middleware/unauthenticated.middleware';
 import { AuthController } from './user/auth/auth.controller';
-import { ProjectsController } from "./projects/projects/projects.controller";
-import { BlogModule } from './modules/blog/blog.module';
-import { PostController } from './modules/blog/controllers/post/post.controller';
-import { PostsService } from './providers/posts.service';
-import { CommentsService } from './providers/comments.service';
+import { ProjectsController } from './projects/projects/projects.controller';
+import { RolesController } from './controllers/roles/roles.controller';
+import { RolesProvider } from './providers/roles.provider';
+import { MailerModule } from '@nest-modules/mailer';
+import { MAILCONFIG } from './variables';
 
 @Module({
   imports: [
-    UserModule,
-    DatabaseModule,
-    ProjectsModule,
-    BlogModule.forRoot({
-      IPostService: PostsService,
-      ICommentService: CommentsService
-    })
-  ],
-  controllers: [AppController],
+    MailerModule.forRoot(MAILCONFIG),
+    UserModule, DatabaseModule, ProjectsModule],
+  controllers: [AppController, RolesController],
   providers: [
     AppService,
-    PostsService,
-    CommentsService,
+    RolesProvider,
     /*{
           provide: APP_GUARD,
           useClass: AuthGuard,
@@ -45,30 +37,22 @@ export class AppModule implements NestModule {
       .apply(UnauthenticatedMiddleware)
       .exclude(
         {
-          path: 'projects/file',
+          path: 'projects/file/download',
           method: RequestMethod.ALL,
-        },
-        {
-          path: 'projects',
-          method: RequestMethod.GET,
-        },
-        {
-          path: 'projects/:guid',
-          method: RequestMethod.GET,
-        })
-      .forRoutes(ProjectsController)
-
-    consumer
-      .apply(UnauthenticatedMiddleware)
-      .exclude(
+        }, 
         {
           path: 'auth/login',
           method: RequestMethod.ALL,
         },
         {
-          path: 'auth/signin',
+          path: 'auth/login',
           method: RequestMethod.ALL,
         },
-      ).forRoutes(AuthController);
+        {
+          path: 'auth/recovery/:email',
+          method: RequestMethod.ALL,
+        })
+      .forRoutes(ProjectsController, AuthController);
+
   }
 }

@@ -6,16 +6,18 @@ const md5 = require('md5');
 import { JwtHandler } from './jwt.handler';
 import { MSG } from '../../../uehue.models/messages';
 import { Observable } from 'rxjs';
-import { Role, User } from '../../../uehue.models';
+import { Role, User, IUser } from '../../../uehue.models';
 import { DBModel } from '../environment/db';
 import * as GLOBAL from "../variables";
-import { generateCode } from '../utils/utils.utility';
+import { generateCode } from 'src/utils/utils.utility';
+import { MailerService } from '@nest-modules/mailer';
 
 
 @Injectable()
 export class AuthProvider {
 
-    constructor(@Inject(DBModel.USER_MODEL) private userModel: Model<DocumentUser>, private http: HttpService) { }
+    constructor(@Inject(DBModel.USER_MODEL) private userModel: Model<DocumentUser>,
+     private http: HttpService, private mailerService: MailerService) { }
 
     async login(email, password): Promise<{ message?: MSG, user?: DocumentUser, error?: string, token?: string }> {
         const condition = {
@@ -71,7 +73,7 @@ export class AuthProvider {
 
                         this.http.post(
                             GLOBAL.VARIABLES.FORUM_ENDPOINT + "/users",
-                            { username: generateCode(Date.now()/1000, 2), email: user.email, password: pwd, _uid: 1 },
+                            { username: generateCode(Date.now() / 1000, 2), email: user.email, password: pwd, _uid: 1 },
                             {
                                 headers: {
                                     "Authorization": "Bearer " + GLOBAL.VARIABLES.FORUM_MASTER_TOKEN
@@ -99,5 +101,50 @@ export class AuthProvider {
 
         });
 
+    }
+
+    update(guid, fields: IUser){
+        fields.password = AuthProvider.cifrate(fields.password);
+        return this.userModel.findOneAndUpdate({guid}, { $set: fields}, {new: true});
+    }
+    
+    recovery(email) {
+        return new Promise((resolve, reject) => {
+            this.getByEmail(email).then(user => {
+                if (user == null) {
+                    reject({ message: 'USER_NOT_FOUND' });
+                    return;
+                }
+
+                const password = Math.random().toString(36).slice(-8);
+
+
+                this.update(user.guid, { password } as any).then(f => {
+                    this
+                        .mailerService
+                        .sendMail({
+                            to: email, // sender address
+                            from: GLOBAL.MAILSENDER, // list of receivers
+                            subject: 'Testing Nest MailerModule ✔', // Subject line
+                            text: 'welcome', // plaintext body
+                            template: GLOBAL.RECOVERY_TEMPLATE,
+                            context: {  // Data to be sent to template files.
+                                name: user.name,
+                                password: password
+                            }
+                        })
+                        .then((e) => {
+                            resolve(true);
+                        })
+                        .catch((e) => {
+                            reject({ message: 'MAIL_ERROR' })
+                        });
+                })
+            })
+        })
+
+    }
+    static cifrate(password) {
+        return md5(md5(password + '@_@' + password));
     }
 }

@@ -3,6 +3,7 @@ import { Module } from '@nestjs/common';
 import {UserSchema} from './schemas/users.schema';
 import {ProjectSchema} from './schemas/projects.schema';
 import {DBCollections, DBModel} from '../environment/db';
+import { RoleSchema } from './schemas/roles.schema';
 
 export const databaseProviders = [
     {
@@ -20,6 +21,11 @@ export const databaseProviders = [
         useFactory: () => mongoose.connection.model(DBCollections.PROJECT, ProjectSchema),
         inject: ['DATABASE_CONNECTION'],
     },
+    {
+        provide: DBModel.ROLE_MODEL,
+        useFactory: () => mongoose.connection.model(DBCollections.ROLE, RoleSchema),
+        inject: ['DATABASE_CONNECTION'],
+    }
 ];
 
 @Module({

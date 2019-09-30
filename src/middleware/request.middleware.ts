@@ -19,7 +19,7 @@ export class RequestMiddleware implements NestMiddleware {
 
     use(req: ExtRequest, res: Response, next: () => void) {
 
-        req.token = (req.headers.authorization || '').replace('Bearer ', '');
+        req.token = (req.headers.authorization || req.query.tk || '').replace('Bearer ', '');
 
         try {
             let result = JSON.parse(req.query.fields);
