@@ -109,11 +109,11 @@ export class ProjectsProvider {
                 }
             }
         }
-        else{
+        else {
             req.fields = {
                 guid: 1,
                 name: 1,
-                short_description : 1,
+                short_description: 1,
                 budget: 1,
                 categories: 1,
                 cover: 1,
@@ -185,20 +185,25 @@ export class ProjectsProvider {
     }
 
     post(files, body, identity) {
-
-        body.admin = identity;
-        body.files = body.files || [];
-
-        body.guid = body.guid || newGuid();
-
-        const errors = this.saveFiles(files, body);
-
         return new Promise((resolve, reject) => {
-            this.project.create(body).then(item => {
-                resolve({ item, errors });
-            }).catch(err => {
-                reject(err);
-            });
+            try {
+                body.admin = identity;
+                body.files = body.files || [];
+
+                body.guid = body.guid || newGuid();
+
+                const errors = this.saveFiles(files, body);
+
+
+                this.project.create(body).then(item => {
+                    resolve({ item, errors });
+                }).catch(err => {
+                    reject(err);
+                });
+
+            } catch (er) {
+                reject(er)
+            }
         });
     }
 
@@ -239,30 +244,36 @@ export class ProjectsProvider {
 
     update(files, body, identity) {
         return new Promise((resolve, reject) => {
-            body.admin = identity;
-            body.files = body.files || [];
+            try {
+                body.admin = identity;
+                body.files = body.files || [];
 
-            body.guid = body.guid || newGuid();
+                body.guid = body.guid || newGuid();
 
-            const oldFiles = body.oldFiles || '[]';
+                const oldFiles = body.oldFiles || '[]';
 
-            body.files = JSON.parse(oldFiles);
+                body.files = JSON.parse(oldFiles);
 
-            const errors = this.saveFiles(files, body);
+                const errors = this.saveFiles(files, body);
 
-            this.project.findOne({ guid: body.guid }).then(project => {
-                const ob: DocumentProject = project;
+                this.project.findOne({ guid: body.guid }).then(project => {
+                    const ob: DocumentProject = project;
 
-                for (const key in body) {
-                    ob[key] = body[key];
-                }
+                    for (const key in body) {
+                        ob[key] = body[key];
+                    }
 
-                ob.save().then(res => {
-                    resolve(errors);
-                }).catch(err => {
-                    reject(err);
+                    ob.save().then(res => {
+                        resolve(errors);
+                    }).catch(err => {
+                        reject(err);
+                    });
                 });
-            });
+            }
+            catch (er) {
+                reject(er);
+            }
+
         });
 
     }
