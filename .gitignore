@@ -1,3 +1,5 @@
 node_modules
 src/providers/uploads/*
 dist
+release
+_dist
