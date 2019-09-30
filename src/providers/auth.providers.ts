@@ -85,7 +85,7 @@ export class AuthProvider {
 
                         subscriber.next({
                             user: result,
-                            token: JwtHandler.encode(result),
+                            token: JwtHandler.encode(result[0]),
                         });
                     }).catch(err => {
                         debugger;
