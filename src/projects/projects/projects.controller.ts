@@ -30,7 +30,7 @@ export class ProjectsController {
         try {
             body['team'] = JSON.parse(body['team'] as any);
         }
-        catch (e) {}
+        catch (e) { }
 
         this.projectsProvider.post(files, body, req.identity).then(result => {
             res.status(200).send(result)
@@ -54,13 +54,24 @@ export class ProjectsController {
         return this.projectsProvider.getById(guid, req);
     }
 
+    @Put(':guid/status')
+    setStatus(@Res() res: Response, @Param('guid') guid, @Body() body) {
+        this.projectsProvider.setStatus(guid, body.status).then(f => {
+            res.status(200).send(f)
+        }).catch(
+            err => {
+                res.status(400).send(err);
+            }
+        )
+    }
+
     @Put()
     @UseInterceptors(FilesInterceptor('files[]'))
     put(@UploadedFiles() files, @Body() body: DocumentProject, @Req() req: ExtRequest) {
         try {
             body['team'] = JSON.parse(body['team'] as any);
         }
-        catch (e) {}
+        catch (e) { }
         return this.projectsProvider.update(files, body, req.identity);
     }
 

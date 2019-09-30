@@ -219,6 +219,10 @@ export class ProjectsProvider {
 
     }
 
+    setStatus(guid, status) {
+        return this.project.findOneAndUpdate({ guid }, { $set: { status } });
+    }
+
     update(files, body, identity) {
         return new Promise((resolve, reject) => {
             body.admin = identity;
