@@ -57,6 +57,7 @@ export class ProjectsController {
     @Put(':guid/status')
     setStatus(@Res() res: Response, @Param('guid') guid, @Body() body) {
         this.projectsProvider.setStatus(guid, body.status).then(f => {
+            //
             res.status(200).send(f)
         }).catch(
             err => {
