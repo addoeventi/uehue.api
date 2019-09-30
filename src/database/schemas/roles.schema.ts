@@ -1,7 +1,7 @@
 import { Schema, Model, model, Document} from 'mongoose';
 import * as mongoose from 'mongoose';
 
-import { DBCollections } from 'src/environment/db';
+import { DBCollections } from '../../environment/db';
 import { IRole, Role } from '../../../../uehue.models';
 
 export const RoleSchema = new Schema({

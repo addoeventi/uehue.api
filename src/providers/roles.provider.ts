@@ -1,7 +1,7 @@
 import { Injectable, Inject } from '@nestjs/common';
-import { DBModel } from 'src/environment/db';
+import { DBModel } from '../environment/db';
 import { Model } from 'mongoose';
-import { DocumentRole } from 'src/database/models';
+import { DocumentRole } from '../database/models';
 import { IRole } from '../../../uehue.models';
 
 @Injectable()

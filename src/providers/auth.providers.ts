@@ -9,7 +9,7 @@ import { Observable } from 'rxjs';
 import { Role, User, IUser } from '../../../uehue.models';
 import { DBModel } from '../environment/db';
 import * as GLOBAL from "../variables";
-import { generateCode } from 'src/utils/utils.utility';
+import { generateCode } from '../utils/utils.utility';
 import { MailerService } from '@nest-modules/mailer';
 
 

@@ -1,5 +1,5 @@
 import { Controller, Get, Req } from '@nestjs/common';
-import { RolesProvider } from 'src/providers/roles.provider';
+import { RolesProvider } from '../../providers/roles.provider';
 import { ExtRequest } from 'extended/types.extended';
 
 @Controller('roles')

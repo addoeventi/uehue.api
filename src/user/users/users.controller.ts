@@ -2,7 +2,7 @@ import {Controller, Get, Req, SetMetadata, Put, Res, UseGuards} from '@nestjs/co
 import {UsersProvider} from '../../providers/users.provider';
 import {ExtRequest} from '../../../extended/types.extended';
 import { Response } from 'express';
-import { AuthGuard } from 'src/guards/auth.guard';
+import { AuthGuard } from '../../guards/auth.guard';
 
 @UseGuards(AuthGuard)
 @Controller()
