@@ -102,7 +102,7 @@ export class ProjectsProvider {
 
             const isAdmin = me.user.roles.find(f => f.name === 'ADMIN') != null;
             const isProf = me.user.roles.find(f => f.name === 'PROFESSIONIST') != null;
-            const $match = aggregate.find(f => Object.keys(f)[0] === '$match').$match;
+            let $match = aggregate.find(f => Object.keys(f)[0] === '$match').$match;
             if ($match && !isAdmin) {
                 if (!(isProf && $match.status === 'DECLINED')) {
                     $match['admin.guid'] = me.user.guid;

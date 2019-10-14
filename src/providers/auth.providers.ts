@@ -67,29 +67,22 @@ export class AuthProvider {
                     });
                 } else {
                     user.guid = newGuid();
-                    user.roles = [Role.defaultRole()];
+                    if (!user.roles || !user.roles.length || user.roles.find(r => r.name == "ADMIN")) {
+                        user.roles = [Role.defaultRole()];
+                    }                    
                     user.password = md5(md5(user.password + '@_@' + user.password));
                     this.userModel.insertMany([user]).then(result => {
 
                         this.http.post(
                             GLOBAL.VARIABLES.FORUM_ENDPOINT + "/users",
                             { username: generateCode(Date.now() / 1000, 2), email: user.email, password: pwd, _uid: 1 },
-                            {
-                                headers: {
-                                    "Authorization": "Bearer " + GLOBAL.VARIABLES.FORUM_MASTER_TOKEN
-                                }
-                            }
+                            { headers: { "Authorization": "Bearer " + GLOBAL.VARIABLES.FORUM_MASTER_TOKEN } }
                         ).subscribe(responseForum => {
                         }, err1 => {
                         })
 
-                        subscriber.next({
-                            user: result,
-                            token: JwtHandler.encode(result[0]),
-                        });
+                        subscriber.next({ user: result, token: JwtHandler.encode(result[0]) });
                     }).catch(err => {
-                        debugger;
-
                         subscriber.error(err);
                     });
                 }
@@ -125,7 +118,7 @@ export class AuthProvider {
                         .sendMail({
                             to: email, // sender address
                             from: GLOBAL.MAILSENDER, // list of receivers
-                            subject: 'Testing Nest MailerModule ✔', // Subject line
+                            subject: '[ Uehue ] Recupero password', // Subject line
                             text: 'welcome', // plaintext body
                             template: GLOBAL.RECOVERY_TEMPLATE,
                             context: {  // Data to be sent to template files.

@@ -1,15 +1,4 @@
-import {
-    Body,
-    Controller,
-    UploadedFile,
-    Inject,
-    Post,
-    UploadedFiles,
-    UseInterceptors,
-    Req,
-    Get,
-    Query, Put, Delete, Res, Param, SetMetadata,
-} from '@nestjs/common';
+import { Body, Controller, Post, UploadedFiles, UseInterceptors, Req, Get, Query, Put, Delete, Res, Param } from '@nestjs/common';
 import { DocumentProject } from '../../database/models';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { ExtRequest } from '../../../extended/types.extended';
@@ -92,12 +81,7 @@ export class ProjectsController {
         RequestMiddleware.SetIdentity(tk, req);
 
         if (req.identity == null) {
-            res.status(401).send({
-                error: 'UNAUTHORIZED',
-                message: 'UNAUTHORIZED',
-                statusCode: 401,
-            });
-
+            res.status(401).send({ error: 'UNAUTHORIZED', message: 'UNAUTHORIZED', statusCode: 401 });
             return;
         }
 
