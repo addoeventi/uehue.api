@@ -5,6 +5,10 @@ import { ExtRequest } from '../../../extended/types.extended';
 import { ProjectsProvider } from '../../providers/projects.provider';
 import { Response } from 'express';
 import { RequestMiddleware } from '../../middleware/request.middleware';
+import { Global } from '../../providers/global';
+const fs = require('fs');
+const path = require('path');
+
 
 @Controller('projects')
 export class ProjectsController {
@@ -26,6 +30,43 @@ export class ProjectsController {
         }).catch(err => {
             res.status(400).send(err);
         });
+    }
+
+    @Post()
+    @UseInterceptors(FilesInterceptor('files[]'))
+    postImages(@UploadedFiles() files, @Body() body: DocumentProject, @Req() req: ExtRequest, @Res() res: Response) {
+
+        if (fs.existsSync(path.resolve(__dirname, 'uploads')) === false) {
+            fs.mkdirSync(path.resolve(__dirname, 'uploads'));
+        }
+
+        const errors = [];
+
+        let filename = Date.now() + '.' + files[0].originalname.split('.').pop()
+
+        const filePath = path.resolve(__dirname, 'uploads', filename);
+        try {
+            fs.writeFileSync(filePath, files[0].buffer);
+        } catch (err) {
+            errors.push({ err, file: files[0].originalname });
+        }
+
+        res.status(200).send({ "url": Global.ENDPOINT + "/image/" + filename })
+    }
+
+    @Get('image/:image')
+    getImage(@Req() req: ExtRequest, @Res() res: Response) {
+
+        let dir = path.resolve(__dirname, 'uploads', req.params.image);
+
+        var img = fs.readFileSync(dir);
+        res.writeHead(200, {
+            'Content-Type': "image/jpeg",
+            'Content-Length': img.length
+        });
+        res.end(img);
+
+        res.status(200).send();
     }
 
     @Get()
