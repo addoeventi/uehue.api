@@ -28,6 +28,7 @@ export class ProjectsController {
         this.projectsProvider.post(files, body, req.identity).then(result => {
             res.status(200).send(result)
         }).catch(err => {
+            console.error(err);
             res.status(400).send(err);
         });
     }
@@ -91,7 +92,8 @@ export class ProjectsController {
             res.status(200).send(f)
         }).catch(
             err => {
-                res.status(400).send(err);
+            console.error(err);
+            res.status(400).send(err);
             }
         )
     }
@@ -102,7 +104,9 @@ export class ProjectsController {
         try {
             body['team'] = JSON.parse(body['team'] as any);
         }
-        catch (e) { }
+        catch (e) {
+            console.error(e);
+         }
         return this.projectsProvider.update(files, body, req.identity);
     }
 
