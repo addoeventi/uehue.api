@@ -37,8 +37,9 @@ export class AuthController {
 
     @Put('recovery/:email')
     recovery(@Param('email') email, @Res() response: Response) {
-        this.authProvider.recovery(email).then(f => {
-            response.status(204).send();
+        this.authProvider.recovery(email)
+        .then(f => {
+            response.status(200).send(f);
         }).catch(err => {
             response.status(400).send(err)
         })
