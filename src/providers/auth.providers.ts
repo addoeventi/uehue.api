@@ -118,7 +118,7 @@ export class AuthProvider {
                             to: email, // sender address
                             from: GLOBAL.MAILSENDER, // list of receivers
                             subject: '[ Uehue ] Recupero password', // Subject line
-                            html: GLOBAL.RECOVERY_TEMPLATE,
+                            html: GLOBAL.RECOVERY_TEMPLATE.replace("{{name}}", user.name).replace("{{password}}", password),
                             context: {  // Data to be sent to template files.
                                 name: user.name,
                                 password: password
