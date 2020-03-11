@@ -22,4 +22,4 @@ export const MAILCONFIG: MailerOptions = {
 
 export const MAILSENDER = 'info@uehue.com'
 
-export const RECOVERY_TEMPLATE = 'Ciao {{name}}, <br /> la tua nuova password è {{password}}'
+export const RECOVERY_TEMPLATE = 'recovery'
