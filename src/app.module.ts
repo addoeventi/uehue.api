@@ -39,7 +39,7 @@ export class AppModule implements NestModule {
         {
           path: 'projects/file/download',
           method: RequestMethod.ALL,
-        }, 
+        },
         {
           path: 'projects',
           method: RequestMethod.GET

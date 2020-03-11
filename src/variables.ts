@@ -2,14 +2,14 @@ import { HandlebarsAdapter, MailerOptions, PugAdapter } from '@nest-modules/mail
 
 export const VARIABLES = {
     "FORUM_MASTER_TOKEN": "55881e5c-f052-4376-b296-42372e25dd1b",
-    "FORUM_ENDPOINT": "http://localhost:4567/api/v2"
+    "FORUM_ENDPOINT": "http://community.uehue.com/api/v2"
 };
 
 export const MAILCONFIG: MailerOptions = {
-    transport: 'smtps://info.bazzecco%40gmail.com:bazzecola@smtp.gmail.com',
+    transport: 'smtps://no-reply%40uehue.com:Uehue2020@smtps.aruba.it',
 
     defaults: {
-        from: '"nest-modules" <modules@nestjs.com>',
+        from: '"Uehue Team" <no-reply@uehue.com>',
     },
     template: {
         dir: __dirname + '/templates',
@@ -20,6 +20,6 @@ export const MAILCONFIG: MailerOptions = {
     },
 };
 
-export const MAILSENDER = 'info@amgas.it'
+export const MAILSENDER = 'info@uehue.com'
 
-export const RECOVERY_TEMPLATE = 'recovery'
+export const RECOVERY_TEMPLATE = 'Ciao {{name}}, <br /> la tua nuova password è {{password}}'

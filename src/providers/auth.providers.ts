@@ -113,8 +113,7 @@ export class AuthProvider {
 
 
                 this.update(user.guid, { password } as any).then(f => {
-                    this
-                        .mailerService
+                    this.mailerService
                         .sendMail({
                             to: email, // sender address
                             from: GLOBAL.MAILSENDER, // list of receivers
@@ -130,7 +129,7 @@ export class AuthProvider {
                             resolve(true);
                         })
                         .catch((e) => {
-                            reject({ message: 'MAIL_ERROR' })
+                            reject({ message: 'MAIL_ERROR', error_message: e.message })
                         });
                 })
             })
