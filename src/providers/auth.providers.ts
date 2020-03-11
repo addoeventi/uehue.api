@@ -17,7 +17,7 @@ import { MailerService } from '@nest-modules/mailer';
 export class AuthProvider {
 
     constructor(@Inject(DBModel.USER_MODEL) private userModel: Model<DocumentUser>,
-     private http: HttpService, private mailerService: MailerService) { }
+        private http: HttpService, private mailerService: MailerService) { }
 
     async login(email, password): Promise<{ message?: MSG, user?: DocumentUser, error?: string, token?: string }> {
         const condition = {
@@ -69,7 +69,7 @@ export class AuthProvider {
                     user.guid = newGuid();
                     if (!user.roles || !user.roles.length || user.roles.find(r => r.name == "ADMIN")) {
                         user.roles = [Role.defaultRole()];
-                    }                    
+                    }
                     user.password = md5(md5(user.password + '@_@' + user.password));
                     this.userModel.insertMany([user]).then(result => {
 
@@ -96,11 +96,11 @@ export class AuthProvider {
 
     }
 
-    update(guid, fields: IUser){
+    update(guid, fields: IUser) {
         fields.password = AuthProvider.cifrate(fields.password);
-        return this.userModel.findOneAndUpdate({guid}, { $set: fields}, {new: true});
+        return this.userModel.findOneAndUpdate({ guid }, { $set: fields }, { new: true });
     }
-    
+
     recovery(email) {
         return new Promise((resolve, reject) => {
             this.getByEmail(email).then(user => {
@@ -129,7 +129,7 @@ export class AuthProvider {
                             resolve(true);
                         })
                         .catch((e) => {
-                            reject({ message: 'MAIL_ERROR', error_message: e.message })
+                            reject({ message: 'MAIL_ERROR', error_message: e.message, error: e })
                         });
                 })
             })
