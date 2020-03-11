@@ -129,7 +129,7 @@ export class AuthProvider {
                             resolve(true);
                         })
                         .catch((e) => {
-                            reject({ message: 'MAIL_ERROR', error_message: e.message, error: e })
+                            reject({ message: 'MAIL_ERROR', error_message: e.message, error: e });
                         });
                 })
             })
