@@ -13,15 +13,18 @@ import { RolesController } from './controllers/roles/roles.controller';
 import { RolesProvider } from './providers/roles.provider';
 import { MailerModule } from '@nest-modules/mailer';
 import { MAILCONFIG } from './variables';
+import { PartnersController } from './controllers/partners/partners.controller';
+import { PartnerProvider } from './providers/partners.provider';
 
 @Module({
   imports: [
     MailerModule.forRoot(MAILCONFIG),
     UserModule, DatabaseModule, ProjectsModule],
-  controllers: [AppController, RolesController],
+  controllers: [AppController, RolesController, PartnersController],
   providers: [
     AppService,
     RolesProvider,
+    PartnerProvider
     /*{
           provide: APP_GUARD,
           useClass: AuthGuard,
