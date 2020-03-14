@@ -29,7 +29,7 @@ export class ProjectsController {
             res.status(200).send(result)
         }).catch(err => {
             console.error(err);
-            res.status(400).send(err);
+            res.status(400).send({err: err, message: err.message});
         });
     }
 
@@ -92,8 +92,8 @@ export class ProjectsController {
             res.status(200).send(f)
         }).catch(
             err => {
-            console.error(err);
-            res.status(400).send(err);
+                console.error(err);
+                res.status(400).send(err);
             }
         )
     }
@@ -106,7 +106,7 @@ export class ProjectsController {
         }
         catch (e) {
             console.error(e);
-         }
+        }
         return this.projectsProvider.update(files, body, req.identity);
     }
 

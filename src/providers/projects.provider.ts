@@ -170,7 +170,7 @@ export class ProjectsProvider {
                 errors.push({ err, file: file.originalname });
             }
         });
-        body.team.forEach(member => {
+        (body.team || []).forEach(member => {
             if (member.cv && member.cv.data) {
                 const filePath = path.resolve(__dirname, 'uploads', newGuid() + '.' + member.cv.name.split('.').pop());
                 const buffer = Buffer.from(member.cv.data, 'base64');
