@@ -44,6 +44,10 @@ export class AppModule implements NestModule {
           method: RequestMethod.ALL,
         },
         {
+          path: 'projects/image',
+          method: RequestMethod.ALL,
+        },
+        {
           path: 'projects',
           method: RequestMethod.GET
         },

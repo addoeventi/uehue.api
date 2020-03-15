@@ -1,11 +1,12 @@
 import { Body, Controller, Post, UploadedFiles, UseInterceptors, Req, Get, Query, Put, Delete, Res, Param } from '@nestjs/common';
 import { DocumentProject } from '../../database/models';
-import { FilesInterceptor } from '@nestjs/platform-express';
+import { FilesInterceptor, FileFieldsInterceptor, AnyFilesInterceptor } from '@nestjs/platform-express';
 import { ExtRequest } from '../../../extended/types.extended';
 import { ProjectsProvider } from '../../providers/projects.provider';
 import { Response } from 'express';
 import { RequestMiddleware } from '../../middleware/request.middleware';
 import { Global } from '../../providers/global';
+import { newGuid } from 'ts-guid';
 const fs = require('fs');
 const path = require('path');
 
@@ -18,18 +19,32 @@ export class ProjectsController {
     }
 
     @Post()
-    @UseInterceptors(FilesInterceptor('files[]'))
+    @UseInterceptors(AnyFilesInterceptor())
     post(@UploadedFiles() files, @Body() body: DocumentProject, @Req() req: ExtRequest, @Res() res: Response) {
         try {
             body['team'] = JSON.parse(body['team'] as any);
         }
         catch (e) { }
 
+        for (let file of (files || [])) {
+            const filename = newGuid() + '.' + file.originalname.split('.').pop();
+            const filePath = path.resolve(__dirname, 'uploads', filename);
+            try {
+                fs.writeFileSync(filePath, file.buffer);
+                if (file.fieldname == "cover") {
+                    body.cover = Global.ENDPOINT +"/projects/image?image=" + filename;
+                } else {
+                    body.files.push({ path: filePath, name: file.originalname });
+                }
+            } catch (err) {
+            }
+        }
+
         this.projectsProvider.post(files, body, req.identity).then(result => {
             res.status(200).send(result)
         }).catch(err => {
             console.error(err);
-            res.status(400).send({err: err, message: err.message});
+            res.status(400).send({ err: err, message: err.message });
         });
     }
 
@@ -52,22 +67,22 @@ export class ProjectsController {
             errors.push({ err, file: files[0].originalname });
         }
 
-        res.status(200).send({ "url": Global.ENDPOINT + "/image/" + filename })
+        res.status(200).send({ "url": Global.ENDPOINT + "/projects/image?image=" + filename })
     }
 
-    @Get('image/:image')
+    @Get('image')
     getImage(@Req() req: ExtRequest, @Res() res: Response) {
 
-        let dir = path.resolve(__dirname, 'uploads', req.params.image);
+        let dir = path.resolve(__dirname, 'uploads', req.query.image);
 
-        var img = fs.readFileSync(dir);
-        res.writeHead(200, {
-            'Content-Type': "image/jpeg",
-            'Content-Length': img.length
-        });
-        res.end(img);
+        // var img = fs.readFileSync(dir);
+        // res.writeHead(200, {
+        //     'Content-Type': "image/jpeg",
+        //     'Content-Length': img.length
+        // });
+        // res.end(img);
 
-        res.status(200).send();
+        res.status(200).sendFile(dir);
     }
 
     @Get()
@@ -99,15 +114,36 @@ export class ProjectsController {
     }
 
     @Put()
-    @UseInterceptors(FilesInterceptor('files[]'))
-    put(@UploadedFiles() files, @Body() body: DocumentProject, @Req() req: ExtRequest) {
+    @UseInterceptors(AnyFilesInterceptor())
+    put(@UploadedFiles() files, @Body() body: DocumentProject, @Req() req: ExtRequest, @Res() res: Response) {
         try {
             body['team'] = JSON.parse(body['team'] as any);
         }
         catch (e) {
             console.error(e);
         }
-        return this.projectsProvider.update(files, body, req.identity);
+        
+        for (let file of (files || [])) {
+            const filename = newGuid() + '.' + file.originalname.split('.').pop();
+            const filePath = path.resolve(__dirname, 'uploads', filename);
+            try {
+                fs.writeFileSync(filePath, file.buffer);
+                if (file.fieldname == "cover") {
+                    body.cover = Global.ENDPOINT + "/projects/image?image=" + filename;
+                }
+            } catch (err) {
+            }
+        }
+
+        this.projectsProvider.update(files, body, req.identity).then(f => {
+            //
+            res.status(200).send(f)
+        }).catch(
+            err => {
+                console.error(err);
+                res.status(400).send(err);
+            }
+        );
     }
 
     @Put(':guid/review')

@@ -192,11 +192,11 @@ export class ProjectsProvider {
 
                 body.guid = body.guid || newGuid();
 
-                const errors = this.saveFiles(files, body);
+                //const errors = this.saveFiles(files, body);
 
 
                 this.project.create(body).then(item => {
-                    resolve({ item, errors });
+                    resolve({ item });
                 }).catch(err => {
                     reject(err);
                 });
@@ -252,9 +252,14 @@ export class ProjectsProvider {
 
                 const oldFiles = body.oldFiles || '[]';
 
-                body.files = JSON.parse(oldFiles);
+                var errors = {};
+                try {
+                    body.files = JSON.parse(oldFiles);
+                    errors = this.saveFiles(files, body);
 
-                const errors = this.saveFiles(files, body);
+                } catch (error) {
+
+                }
 
                 this.project.findOne({ guid: body.guid }).then(project => {
                     const ob: DocumentProject = project;
