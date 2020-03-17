@@ -14,6 +14,10 @@ export class PartnerProvider {
         return this.partnerModel.find(req.filters, req.fields).skip(req.skip).limit(req.limit);
     }
 
+    getById(req: ExtRequest) {
+        return this.partnerModel.findOne({id: req.params.id})
+    }
+
     add(partner: any) {
         return this.partnerModel.create(partner);
     }

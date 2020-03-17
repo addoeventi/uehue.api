@@ -26,6 +26,7 @@ export const ProjectSchema = new mongoose.Schema({
     steps: [{ type: Object, default: []}],
     deletedDate: { type: Date },
     deletedBy: {},
+    gallery: { type: Array },
     professionstReview: { type: Array, default: []},
     team: {}
 });

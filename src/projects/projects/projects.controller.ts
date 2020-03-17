@@ -26,14 +26,39 @@ export class ProjectsController {
         }
         catch (e) { }
 
+        let dir = path.resolve(__dirname, '../../', 'uploads');
+        if (fs.existsSync(dir) === false) {
+            fs.mkdirSync(dir);
+        }
+
+        let galleryKeys: string[] = Object.keys(body).filter(f => f.indexOf("gallery.") > -1)
+        let indexes = [...new Set(galleryKeys.map(g => g.split('.')[1]))]
+        body.gallery = body.gallery || [];
+        for (let i of indexes) {
+            if (body["gallery." + i + ".type"] == "image" && !body["gallery." + i + ".media"]) {
+                let file = files.find(f => f.fieldname == "gallery." + i + ".media")
+                const filename = newGuid() + '.' + file.originalname.split('.').pop();
+                const filePath = path.resolve(dir, filename);
+                fs.writeFileSync(filePath, file.buffer);
+                body.gallery.push({ guid: body["gallery." + i + ".guid"], type: body["gallery." + i + ".type"], media: Global.ENDPOINT + "/projects/image?image=" + filename });
+            }
+            if ((body["gallery." + i + ".type"] == "image" || body["gallery." + i + ".type"] == "video") && body["gallery." + i + ".media"]) {
+                body.gallery.push({ guid: body["gallery." + i + ".guid"], type: body["gallery." + i + ".type"], media: body["gallery." + i + ".media"] });
+            }
+
+            delete body["gallery." + i + ".type"]
+            delete body["gallery." + i + ".media"]
+            delete body["gallery." + i + ".guid"]
+        }
+
         for (let file of (files || [])) {
             const filename = newGuid() + '.' + file.originalname.split('.').pop();
-            const filePath = path.resolve(__dirname, 'uploads', filename);
+            const filePath = path.resolve(dir, filename);
             try {
                 fs.writeFileSync(filePath, file.buffer);
                 if (file.fieldname == "cover") {
-                    body.cover = Global.ENDPOINT +"/projects/image?image=" + filename;
-                } else {
+                    body.cover = Global.ENDPOINT + "/projects/image?image=" + filename;
+                } if (file.fieldname.indexOf("gallery.") == -1) {
                     body.files.push({ path: filePath, name: file.originalname });
                 }
             } catch (err) {
@@ -48,8 +73,8 @@ export class ProjectsController {
         });
     }
 
-    @Post()
-    @UseInterceptors(FilesInterceptor('files[]'))
+    @Post('image')
+    @UseInterceptors(FilesInterceptor('image'))
     postImages(@UploadedFiles() files, @Body() body: DocumentProject, @Req() req: ExtRequest, @Res() res: Response) {
 
         if (fs.existsSync(path.resolve(__dirname, 'uploads')) === false) {
@@ -73,7 +98,7 @@ export class ProjectsController {
     @Get('image')
     getImage(@Req() req: ExtRequest, @Res() res: Response) {
 
-        let dir = path.resolve(__dirname, 'uploads', req.query.image);
+        let dir = path.resolve(__dirname, "../../", 'uploads', req.query.image);
 
         // var img = fs.readFileSync(dir);
         // res.writeHead(200, {
@@ -122,14 +147,41 @@ export class ProjectsController {
         catch (e) {
             console.error(e);
         }
-        
+
+        let dir = path.resolve(__dirname, '../../', 'uploads');
+        if (fs.existsSync(dir) === false) {
+            fs.mkdirSync(dir);
+        }
+
+        let galleryKeys: string[] = Object.keys(body).filter(f => f.indexOf("gallery.") > -1)
+        let indexes = [...new Set(galleryKeys.map(g => g.split('.')[1]))]
+        body.gallery = body.gallery || [];
+        for (let i of indexes) {
+            if (body["gallery." + i + ".type"] == "image" && !body["gallery." + i + ".media"]) {
+                let file = files.find(f => f.fieldname == "gallery." + i + ".media")
+                const filename = newGuid() + '.' + file.originalname.split('.').pop();
+                const filePath = path.resolve(dir, filename);
+                fs.writeFileSync(filePath, file.buffer);
+                body.gallery.push({ guid: body["gallery." + i + ".guid"], type: body["gallery." + i + ".type"], media: Global.ENDPOINT + "/projects/image?image=" + filename });
+            }
+            if ((body["gallery." + i + ".type"] == "image" || body["gallery." + i + ".type"] == "video") && body["gallery." + i + ".media"]) {
+                body.gallery.push({ guid: body["gallery." + i + ".guid"], type: body["gallery." + i + ".type"], media: body["gallery." + i + ".media"] });
+            }
+
+            delete body["gallery." + i + ".type"]
+            delete body["gallery." + i + ".media"]
+            delete body["gallery." + i + ".guid"]
+        }
+
         for (let file of (files || [])) {
             const filename = newGuid() + '.' + file.originalname.split('.').pop();
-            const filePath = path.resolve(__dirname, 'uploads', filename);
+            const filePath = path.resolve(dir, filename);
             try {
                 fs.writeFileSync(filePath, file.buffer);
                 if (file.fieldname == "cover") {
                     body.cover = Global.ENDPOINT + "/projects/image?image=" + filename;
+                } if (file.fieldname.indexOf("gallery.") == -1) {
+                    body.files.push({ path: filePath, name: file.originalname });
                 }
             } catch (err) {
             }
