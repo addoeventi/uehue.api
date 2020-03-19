@@ -50,7 +50,7 @@ export class PartnersController {
             }
         }
 
-        req.body.id = newGuid();
+        req.body.guid = newGuid();
         return this.partnersProvider.add(req.body);
     }
 
