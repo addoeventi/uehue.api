@@ -15,7 +15,15 @@ export class PartnerProvider {
     }
 
     getById(req: ExtRequest) {
-        return this.partnerModel.findOne({guid: req.params.id})
+        return  new Promise((resolve, reject) => {
+            this.partnerModel.find({guid: req.params.id}, req.fields)
+            .then(res => {
+                resolve(res[0])
+            }).catch(err => {
+                reject(err)
+            })
+        })
+        
     }
 
     add(partner: any) {
