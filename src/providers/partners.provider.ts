@@ -15,7 +15,7 @@ export class PartnerProvider {
     }
 
     getById(req: ExtRequest) {
-        return this.partnerModel.findOne({id: req.params.id})
+        return this.partnerModel.findOne({guid: req.params.id})
     }
 
     add(partner: any) {
