@@ -2,7 +2,7 @@ import { Schema, model, Model, Document } from 'mongoose';
 import { DBCollections } from '../../environment/db';
 
 export const PartnerSchema = new Schema({
-    id: { type: String, required: 'GUID_REQUIRED' },
+    guid: { type: String, required: 'GUID_REQUIRED' },
     name: String,
     surname: String,
     description: String,
