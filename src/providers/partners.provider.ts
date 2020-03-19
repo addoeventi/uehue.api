@@ -35,6 +35,6 @@ export class PartnerProvider {
     }
 
     delete(guid){
-        return this.partnerModel.findByIdAndRemove({guid});
+        return this.partnerModel.findOneAndRemove({guid});
     }
 }
