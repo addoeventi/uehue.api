@@ -9,7 +9,7 @@ export const ProjectSchema = new mongoose.Schema({
     short_description: { type: String },
     budget_usage_description:  { type: String },
     team_description: { type: String },
-    budget:  { type: Number, required: true },
+    budget:  { type: String },
     interesting_point: { type: String },
     date: { type: Date, required: true, default: new Date()},
     categories: [{ type: String, default: []}],
